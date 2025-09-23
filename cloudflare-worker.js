@@ -84,17 +84,41 @@ async function fetchStoreData(subdomain) {
   }
 }
 
+// Função auxiliar para verificar se uma imagem existe
+async function checkImageExists(url) {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+// Função para obter a URL da imagem da loja
+async function getStoreImageUrl(subdomain) {
+  const baseUrl = 'https://mevendeai.com/store-logos/';
+  const extensions = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
+  
+  // Tentar cada extensão até encontrar uma imagem que existe
+  for (const ext of extensions) {
+    const imageUrl = `${baseUrl}${subdomain}.${ext}`;
+    const exists = await checkImageExists(imageUrl);
+    if (exists) {
+      return imageUrl;
+    }
+  }
+  
+  // Se nenhuma imagem for encontrada, retornar fallback
+  return 'https://mevendeai.com/logoprincipale.svg';
+}
+
 // Função para gerar HTML com meta tags dinâmicas
-function generateMetaHTML(storeData, subdomain, fullUrl) {
+async function generateMetaHTML(storeData, subdomain, fullUrl) {
   const storeName = storeData?.name || `${subdomain} Store`;
   const storeDescription = storeData?.description || `Descubra produtos incríveis na ${storeName}. Compre com segurança e receba em casa.`;
   
-  // Lógica de imagem: apenas logo_url ou fallback para logoprincipale.svg
-  let storeImage = 'https://mevendeai.com/logoprincipale.svg'; // Fallback padrão
-  if (storeData?.logo_url) {
-    // Se logo_url existe, construir o caminho completo no diretório store-logos
-    storeImage = `https://mevendeai.com/store-logos/${storeData.logo_url}`;
-  }
+  // Nova lógica de imagem: usar subdomínio como nome do arquivo
+  const storeImage = await getStoreImageUrl(subdomain);
   
   const storeColor = storeData?.primary_color || '#4F46E5';
   const storeUrl = fullUrl;
@@ -246,7 +270,7 @@ export default {
       const storeData = await fetchStoreData(subdomain);
       
       // Gera HTML com meta tags (sempre usando generateMetaHTML)
-      const html = generateMetaHTML(storeData, subdomain, request.url);
+      const html = await generateMetaHTML(storeData, subdomain, request.url);
       console.log(`Generated meta HTML for subdomain: ${subdomain}`);
       
       // Retorna HTML com headers apropriados
