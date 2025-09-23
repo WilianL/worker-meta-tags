@@ -104,11 +104,23 @@ async function checkImageExists(url) {
 }
 
 // Função para obter a URL da imagem da loja
-async function getStoreImageUrl(subdomain) {
+async function getStoreImageUrl(storeData, subdomain) {
   const baseUrl = 'https://mevendeai.com/store-logos/';
   const extensions = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
   
-  // Tentar cada extensão até encontrar uma imagem que existe
+  // Primeiro, tentar usar o nickname da loja (como o PHP salva)
+  if (storeData && storeData.nickname) {
+    // Testar todas as extensões para o nickname
+    for (const ext of extensions) {
+      const imageUrl = `${baseUrl}${storeData.nickname}.${ext}`;
+      const exists = await checkImageExists(imageUrl);
+      if (exists) {
+        return imageUrl;
+      }
+    }
+  }
+  
+  // Fallback: tentar com subdomain e várias extensões
   for (const ext of extensions) {
     const imageUrl = `${baseUrl}${subdomain}.${ext}`;
     const exists = await checkImageExists(imageUrl);
@@ -126,8 +138,8 @@ async function generateMetaHTML(storeData, subdomain, fullUrl) {
   const storeName = storeData?.name || `${subdomain} Store`;
   const storeDescription = storeData?.description || `Descubra produtos incríveis na ${storeName}. Compre com segurança e receba em casa.`;
   
-  // Nova lógica de imagem: usar subdomínio como nome do arquivo
-  const storeImage = await getStoreImageUrl(subdomain);
+  // Nova lógica de imagem: usar nickname da loja primeiro, depois subdomain
+  const storeImage = await getStoreImageUrl(storeData, subdomain);
   
   const storeColor = storeData?.primary_color || '#4F46E5';
   const storeUrl = fullUrl;
