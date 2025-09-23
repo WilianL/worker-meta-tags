@@ -118,7 +118,7 @@ async function getStoreImageUrl(subdomain) {
   }
   
   // Se nenhuma imagem for encontrada, retornar fallback
-  return 'https://mevendeai.com/logoprincipale.svg';
+  return 'https://mevendeai.com/metalogo.png';
 }
 
 // Função para gerar HTML com meta tags dinâmicas
