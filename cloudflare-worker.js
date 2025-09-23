@@ -88,7 +88,16 @@ async function fetchStoreData(subdomain) {
 async function checkImageExists(url) {
   try {
     const response = await fetch(url, { method: 'HEAD' });
-    return response.ok;
+    
+    // Verificar se a resposta é OK e se o Content-Type é realmente de uma imagem
+    if (!response.ok) {
+      return false;
+    }
+    
+    const contentType = response.headers.get('content-type') || '';
+    const isImage = contentType.startsWith('image/');
+    
+    return isImage;
   } catch {
     return false;
   }
