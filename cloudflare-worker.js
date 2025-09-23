@@ -257,6 +257,26 @@ export default {
       // Log para debug
       console.log(`Request: ${hostname} - UA: ${userAgent}`);
       
+      // Verifica se é uma requisição para API PHP
+      if (url.pathname.startsWith('/api/')) {
+        console.log(`API request detected: ${url.pathname}`);
+        
+        // Para requisições de API PHP, retorna erro informativo
+        // pois Cloudflare Workers não executa PHP
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'API PHP não disponível no Cloudflare Workers. Use Supabase Storage ou configure um servidor PHP separado.'
+        }), {
+          status: 501,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+          }
+        });
+      }
+      
       // Verifica se é um bot
       const isBotRequest = isBot(userAgent);
       
