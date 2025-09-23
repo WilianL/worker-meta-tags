@@ -1,0 +1,5 @@
+{
+  "name": "mevendeai-meta-tags",
+  "compatibility_date": "2025-09-23",
+  "main": "cloudflare-worker.js"
+}
