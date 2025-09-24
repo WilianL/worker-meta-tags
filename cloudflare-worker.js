@@ -110,24 +110,24 @@ async function checkImageExists(url) {
   }
 }
 
-// Função para obter a URL da imagem da loja - sempre usar pasta local
+// Função para obter a URL da imagem da loja
 async function getStoreImageUrl(storeData, subdomain) {
   const baseUrl = 'https://mevendeai.com/store-logos/';
   
   console.log(`[DEBUG] getStoreImageUrl - subdomain: ${subdomain}, storeData:`, storeData);
   
-  // Sempre usar a pasta local store-logos como referência principal
+  // Como o domínio é o próprio nickname, usamos diretamente o subdomain
   // O PHP sempre salva as imagens como PNG
   const imageUrl = `${baseUrl}${subdomain}.png`;
-  console.log(`[DEBUG] Testando URL da pasta local: ${imageUrl}`);
+  console.log(`[DEBUG] Testando URL: ${imageUrl}`);
   
   const exists = await checkImageExists(imageUrl);
   if (exists) {
-    console.log(`[DEBUG] Imagem encontrada na pasta local: ${imageUrl}`);
+    console.log(`[DEBUG] Imagem encontrada: ${imageUrl}`);
     return imageUrl;
   }
   
-  // Se nenhuma imagem for encontrada, retornar fallback padrão (metalogo.png)
+  // Se nenhuma imagem for encontrada, retornar fallback
   console.log(`[DEBUG] Nenhuma imagem encontrada, usando fallback: metalogo.png`);
   return 'https://mevendeai.com/metalogo.png';
 }
