@@ -112,7 +112,7 @@ async function checkImageExists(url) {
 
 // Função para obter a URL da imagem da loja
 async function getStoreImageUrl(storeData, subdomain) {
-  const baseUrl = 'https://mevendeai.com/public/store-logos/';
+  const baseUrl = 'https://mevendeai.com/store-logos/';
   
   console.log(`[DEBUG] getStoreImageUrl - subdomain: ${subdomain}, storeData:`, storeData);
   
