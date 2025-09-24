@@ -87,49 +87,65 @@ async function fetchStoreData(subdomain) {
 // Função auxiliar para verificar se uma imagem existe
 async function checkImageExists(url) {
   try {
+    console.log(`[DEBUG] checkImageExists - Verificando: ${url}`);
     const response = await fetch(url, { method: 'HEAD' });
+    
+    console.log(`[DEBUG] checkImageExists - Status: ${response.status}`);
     
     // Verificar se a resposta é OK e se o Content-Type é realmente de uma imagem
     if (!response.ok) {
+      console.log(`[DEBUG] checkImageExists - Resposta não OK: ${response.status}`);
       return false;
     }
     
     const contentType = response.headers.get('content-type') || '';
     const isImage = contentType.startsWith('image/');
     
+    console.log(`[DEBUG] checkImageExists - Content-Type: ${contentType}, isImage: ${isImage}`);
+    
     return isImage;
-  } catch {
+  } catch (error) {
+    console.log(`[DEBUG] checkImageExists - Erro: ${error.message}`);
     return false;
   }
 }
 
 // Função para obter a URL da imagem da loja
 async function getStoreImageUrl(storeData, subdomain) {
-  const baseUrl = 'https://mevendeai.com/store-logos/';
+  const baseUrl = 'https://mevendeai.com/public/store-logos/';
   const extensions = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
+  
+  console.log(`[DEBUG] getStoreImageUrl - subdomain: ${subdomain}, storeData:`, storeData);
   
   // Primeiro, tentar usar o nickname da loja (como o PHP salva)
   if (storeData && storeData.nickname) {
+    console.log(`[DEBUG] Tentando nickname: ${storeData.nickname}`);
     // Testar todas as extensões para o nickname
     for (const ext of extensions) {
       const imageUrl = `${baseUrl}${storeData.nickname}.${ext}`;
+      console.log(`[DEBUG] Testando URL: ${imageUrl}`);
       const exists = await checkImageExists(imageUrl);
       if (exists) {
+        console.log(`[DEBUG] Imagem encontrada: ${imageUrl}`);
         return imageUrl;
       }
     }
   }
   
   // Fallback: tentar com subdomain e várias extensões
+  console.log(`[DEBUG] Fallback para subdomain: ${subdomain}`);
   for (const ext of extensions) {
     const imageUrl = `${baseUrl}${subdomain}.${ext}`;
+    console.log(`[DEBUG] Testando URL fallback: ${imageUrl}`);
     const exists = await checkImageExists(imageUrl);
     if (exists) {
+      console.log(`[DEBUG] Imagem fallback encontrada: ${imageUrl}`);
       return imageUrl;
     }
   }
   
   // Se nenhuma imagem for encontrada, retornar fallback
+  console.log(`[DEBUG] Nenhuma imagem encontrada, usando fallback: metalogo.png`);
   return 'https://mevendeai.com/metalogo.png';
 }
 
