@@ -112,36 +112,19 @@ async function checkImageExists(url) {
 
 // Função para obter a URL da imagem da loja
 async function getStoreImageUrl(storeData, subdomain) {
-  const baseUrl = 'https://mevendeai.com/public/store-logos/';
-  const extensions = ['png', 'jpg', 'jpeg', 'webp', 'svg'];
+  const baseUrl = 'https://mevendeai.com/store-logos/';
   
   console.log(`[DEBUG] getStoreImageUrl - subdomain: ${subdomain}, storeData:`, storeData);
   
-  // Primeiro, tentar usar o nickname da loja (como o PHP salva)
-  if (storeData && storeData.nickname) {
-    console.log(`[DEBUG] Tentando nickname: ${storeData.nickname}`);
-    // Testar todas as extensões para o nickname
-    for (const ext of extensions) {
-      const imageUrl = `${baseUrl}${storeData.nickname}.${ext}`;
-      console.log(`[DEBUG] Testando URL: ${imageUrl}`);
-      const exists = await checkImageExists(imageUrl);
-      if (exists) {
-        console.log(`[DEBUG] Imagem encontrada: ${imageUrl}`);
-        return imageUrl;
-      }
-    }
-  }
+  // Como o domínio é o próprio nickname, usamos diretamente o subdomain
+  // O PHP sempre salva as imagens como PNG
+  const imageUrl = `${baseUrl}${subdomain}.png`;
+  console.log(`[DEBUG] Testando URL: ${imageUrl}`);
   
-  // Fallback: tentar com subdomain e várias extensões
-  console.log(`[DEBUG] Fallback para subdomain: ${subdomain}`);
-  for (const ext of extensions) {
-    const imageUrl = `${baseUrl}${subdomain}.${ext}`;
-    console.log(`[DEBUG] Testando URL fallback: ${imageUrl}`);
-    const exists = await checkImageExists(imageUrl);
-    if (exists) {
-      console.log(`[DEBUG] Imagem fallback encontrada: ${imageUrl}`);
-      return imageUrl;
-    }
+  const exists = await checkImageExists(imageUrl);
+  if (exists) {
+    console.log(`[DEBUG] Imagem encontrada: ${imageUrl}`);
+    return imageUrl;
   }
   
   // Se nenhuma imagem for encontrada, retornar fallback
